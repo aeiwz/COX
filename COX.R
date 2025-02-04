@@ -62,5 +62,37 @@ HSTi %>%
 
 
 library(survival)
-coxph(Surv(time, status_os) ~ age + sex + thickness + ulcer, data = melanoma) %>% 
+coxph(Surv(time, status) ~ age + sex + HSTi_ng_L + HSTi_level, data = HSTi) %>% 
   summary()
+
+
+
+
+dependent_os  <- "Surv(time, status)"
+explanatory   <- c("age", "sex", "HSTi_ng_L", "HSTi_level")
+
+HSTi %>% 
+  finalfit(dependent_os, explanatory)
+
+
+HSTi %>% 
+  finalfit(dependent_os, explanatory, add_dependent_label = FALSE) %>% 
+  rename("Overall survival" = label) %>% 
+  rename(" " = levels) %>% 
+  rename("  " = all)
+
+
+explanatory_multi <- c("age", "HSTi_ng_L", "HSTi_level")
+HSTi %>% 
+  finalfit(dependent_os, explanatory, 
+           explanatory_multi, keep_models = TRUE)
+
+
+HSTi$year = HSTi$time/365
+explanatory <- c("year", "HSTi_level", "HSTi_ng_L", "sex", "age", 'status')
+HSTi %>% 
+  coxphmulti(dependent_os, explanatory) %>% 
+  cox.zph() %>% 
+  {zph_result <<- .} %>% 
+  plot(var=5)
+
