@@ -1,1 +1,1 @@
-![fig1](./COX HSTi level.png)
+(fig1)[./COX HSTi level.png]
